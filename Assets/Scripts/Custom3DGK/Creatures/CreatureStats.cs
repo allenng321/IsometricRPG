@@ -15,32 +15,36 @@ namespace Custom3DGK.Creatures
 
         [SerializeField]
         private float _MaxSpeed = 10;
-        public float MaxSpeed { get { return _MaxSpeed; } }
-        
+        public float MaxSpeed => _MaxSpeed;
+
         [SerializeField]
-        private float _JumpSpeed = 40;
-        public float JumpSpeed { get { return _JumpSpeed; } }
-        
+        private float _JumpForce = 1200;
+        public float JumpForce => _JumpForce;
+
         [SerializeField]
-        private float _JumpAbortSpeed = 2;
-        public float JumpAbortSpeed { get { return _JumpAbortSpeed; } }
+        private float _JumpAbortSpeed = 250;
+        public float JumpAbortSpeed => _JumpAbortSpeed;
+
+        [SerializeField]
+        private float _AirborneHorizontalVelocityMultiplier = .75f;
+        public float AirborneHorizontalVelocityMultiplier => _AirborneHorizontalVelocityMultiplier;
 
         [SerializeField]
         private float _Acceleration = 5;
-        public float Acceleration { get { return _Acceleration; } }
+        public float Acceleration => _Acceleration;
 
         [SerializeField]
         private float _Deceleration = 5;
-        public float Deceleration { get { return _Deceleration; } }
+        public float Deceleration => _Deceleration;
 
         [SerializeField]
         private float _MinTurnSpeed = 400;
-        public float MinTurnSpeed { get { return _MinTurnSpeed; } }
+        public float MinTurnSpeed => _MinTurnSpeed;
 
         [SerializeField]
         private float _MaxTurnSpeed = 1200;
-        public float MaxTurnSpeed { get { return _MaxTurnSpeed; } }
-        
+        public float MaxTurnSpeed => _MaxTurnSpeed;
+
         /************************************************************************************************************************/
     }
 }
