@@ -209,9 +209,9 @@ namespace Custom3DGK.Creatures
             //                 Creature.CurrentTurnSpeed;
 
             var _AirborneTurnSpeedProportion = 5.4f;
-            var workingTurnSpeed = _Airborne.IsJumpInitializing?//IsJumping ?
-                deltaAngle * (1f / 180) * _AirborneTurnSpeedProportion * CurrentTurnSpeed :
-                CurrentTurnSpeed;
+            var workingTurnSpeed = _Airborne.InAir
+                ? Mathf.Abs(deltaAngle / 180) * _AirborneTurnSpeedProportion * CurrentTurnSpeed
+                : CurrentTurnSpeed;
             // NOTE: deltaAngle must be positive for `Quaternion.RotateTowards` to move toward destination
             _maxDegreesDelta += Math.Abs(deltaAngle) * workingTurnSpeed * Time.deltaTime;
         }
@@ -354,10 +354,14 @@ namespace Custom3DGK.Creatures
             Vector3 horizontalVelocity = Vector3.zero;
             Vector3 horizontalMovement = Vector3.zero;
 
+            // Special case for processing movement when in air either falling off a ledge or jump
             if (_Airborne.InAir)
             {
-                // Special case for processing movement when in air either falling off a ledge or jump
-                horizontalVelocity = Motor.Transform.InverseTransformDirection(Motor.GetVelocityFromMovement(_rootMotionPositionDelta, deltaTime))* Stats.AirborneHorizontalVelocityMultiplier;
+                var pDelta = Motor.GetVelocityFromMovement(_rootMotionPositionDelta, deltaTime);
+                var forward = Motor.CharacterForward;
+
+                horizontalVelocity = Vector3.Dot(Motor.Transform.InverseTransformDirection(pDelta), forward) * forward;
+                horizontalVelocity *= Stats.AirborneHorizontalVelocityMultiplier;
             }
             else if (!_FullMovementControl || // If FullMovementControl is disabled in the Inspector.
                 !StateMachine.CurrentState.FullMovementControl) // Or the current state does not want it.

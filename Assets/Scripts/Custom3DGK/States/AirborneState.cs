@@ -30,7 +30,7 @@ namespace Custom3DGK.States
 
         private Executor _executor;
         private InvokeId _isJumpingCoroutine;
-        public bool IsJumpInitializing { get; private set; }
+        private bool _isJumpInitializing;
         
         /************************************************************************************************************************/
 
@@ -67,7 +67,7 @@ namespace Custom3DGK.States
         {
             if (!InAir) return;
 
-            if (Creature.IsGrounded() && Creature.VerticalSpeed <= 0 && !IsJumpInitializing)
+            if (Creature.IsGrounded() && Creature.VerticalSpeed <= 0 && !_isJumpInitializing)
             {
                 InAir = false;
             }
@@ -130,7 +130,7 @@ namespace Custom3DGK.States
             // Entering this state would have called OnEnable.
             InAir = true;
             Creature.Motor.ForceUnground();
-            IsJumpInitializing = true;
+            _isJumpInitializing = true;
             _PlayAudio.Invoke();
             Jumping = true; 
 
@@ -150,13 +150,13 @@ namespace Custom3DGK.States
 
             _executor.DelayExecute(
                 0.25f,
-                x => { IsJumpInitializing = false; });
+                x => { _isJumpInitializing = false; });
         }
         
         // exists in case if needed on a key press in future
         public void CancelJump(bool conjure = false)
         {
-            IsJumpInitializing = false;
+            _isJumpInitializing = false;
             Jumping = false;
             CancelJumping = conjure ? JumpingCancel.Immediate : JumpingCancel.Delayed;
 
@@ -176,7 +176,7 @@ namespace Custom3DGK.States
 
         public bool TryWallHang()
         {
-            if (!Creature.IsGrounded() && !IsJumpInitializing && Creature.WallHangSensor.GetNearest() != null)
+            if (!Creature.IsGrounded() && !_isJumpInitializing && Creature.WallHangSensor.GetNearest() != null)
             {
                 Creature.StateMachine.TryResetState(_WallState);
                 return true;

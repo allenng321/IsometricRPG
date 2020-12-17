@@ -26,7 +26,7 @@ namespace Custom3DGK.Creatures
         public float JumpAbortSpeed => _JumpAbortSpeed;
 
         [SerializeField]
-        private float _AirborneHorizontalVelocityMultiplier = .75f;
+        private float _AirborneHorizontalVelocityMultiplier = .85f;
         public float AirborneHorizontalVelocityMultiplier => _AirborneHorizontalVelocityMultiplier;
 
         [SerializeField]
