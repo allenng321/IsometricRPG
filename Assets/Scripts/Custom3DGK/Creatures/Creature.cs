@@ -332,16 +332,20 @@ namespace Custom3DGK.Creatures
                 _Airborne.Jumping = false;
                 VerticalSpeed = Stats.JumpForce;
             }
-            if (_Airborne.InAir && _Airborne.CancelJumping)
+            if (_Airborne.InAir && _Airborne.CancelJumping != AirborneState.JumpingCancel.Disable)
             {
                 // Just in case if the player is in air and we want to cancel jump
                 _Airborne.Jumping = false;
                 
                 // Acts as a breaking force to stop going up
-                if (VerticalSpeed > 0) VerticalSpeed -= Stats.JumpAbortSpeed;
+                if (VerticalSpeed > 0)
+                    VerticalSpeed -= _Airborne.CancelJumping == AirborneState.JumpingCancel.Immediate
+                        ? VerticalSpeed + 2.5f
+                        : Stats.JumpAbortSpeed;
 
                 // Set the bool to false once going up is halted
-                _Airborne.CancelJumping = VerticalSpeed <= 0;
+                _Airborne.CancelJumping =
+                    VerticalSpeed <= 0 ? AirborneState.JumpingCancel.Disable : _Airborne.CancelJumping;
             }
 
             Vector3 verticalVelocity = Motor.CharacterUp * (VerticalSpeed * deltaTime);
