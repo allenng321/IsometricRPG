@@ -144,7 +144,7 @@ namespace Custom3DGK.Creatures
         public bool IsOtherMotionState()
         {
             CreatureState state;
-            if (IsGrounded() && !_Airborne.IsJumping)
+            if (IsGrounded() && !_Airborne.InAir)
             {
                 state = _Brain.ForwardDirection == Vector3.zero ? _Idle : _Locomotion;
             }
@@ -209,9 +209,9 @@ namespace Custom3DGK.Creatures
             //                 Creature.CurrentTurnSpeed;
 
             var _AirborneTurnSpeedProportion = 5.4f;
-            var workingTurnSpeed = _Airborne.IsJumping ?
-                deltaAngle * (1f / 180) * _AirborneTurnSpeedProportion * CurrentTurnSpeed :
-                CurrentTurnSpeed;
+            var workingTurnSpeed = _Airborne.InAir
+                ? Mathf.Abs(deltaAngle / 180) * _AirborneTurnSpeedProportion * CurrentTurnSpeed
+                : CurrentTurnSpeed;
             // NOTE: deltaAngle must be positive for `Quaternion.RotateTowards` to move toward destination
             _maxDegreesDelta += Math.Abs(deltaAngle) * workingTurnSpeed * Time.deltaTime;
         }
@@ -311,11 +311,13 @@ namespace Custom3DGK.Creatures
             //////////////////////////////
             
             
-            // Vertical velocity
-            if (_Airborne.IsJumping)
-            {
-                VerticalSpeed = Stats.JumpSpeed;
-            }
+            // Vertical speed
+            // If player is in air and not on ground then use the airborne gravity multiplier to adjust the time to reground player
+            var s = _Airborne.InAir? _Planet.Gravity * _Airborne.gravityMultiplier: _Planet.Gravity;
+            if (VerticalSpeed <= 0)
+                VerticalSpeed = -s;
+            else
+                VerticalSpeed -= s;
             
             // if (_Wall.IsWallHanging)
             // {
@@ -323,17 +325,45 @@ namespace Custom3DGK.Creatures
             //     return;
             // }
             
-            if (VerticalSpeed <= 0)
-                VerticalSpeed = -_Planet.Gravity;
-            else
-                VerticalSpeed -= _Planet.Gravity;
+            // Override the vertical speed in duration of jump
+            if (_Airborne.Jumping)
+            {
+                // Set the jumping var to false so that it acts as one time force
+                _Airborne.Jumping = false;
+                VerticalSpeed = Stats.JumpForce;
+            }
+            if (_Airborne.InAir && _Airborne.CancelJumping != AirborneState.JumpingCancel.Disable)
+            {
+                // Just in case if the player is in air and we want to cancel jump
+                _Airborne.Jumping = false;
+                
+                // Acts as a breaking force to stop going up
+                if (VerticalSpeed > 0)
+                    VerticalSpeed -= _Airborne.CancelJumping == AirborneState.JumpingCancel.Immediate
+                        ? VerticalSpeed + 2.5f
+                        : Stats.JumpAbortSpeed;
+
+                // Set the bool to false once going up is halted
+                _Airborne.CancelJumping =
+                    VerticalSpeed <= 0 ? AirborneState.JumpingCancel.Disable : _Airborne.CancelJumping;
+            }
+
             Vector3 verticalVelocity = Motor.CharacterUp * (VerticalSpeed * deltaTime);
 
             // Horizontal velocity
             Vector3 horizontalVelocity = Vector3.zero;
             Vector3 horizontalMovement = Vector3.zero;
-            
-            if (!_FullMovementControl || // If FullMovementControl is disabled in the Inspector.
+
+            // Special case for processing movement when in air either falling off a ledge or jump
+            if (_Airborne.InAir)
+            {
+                var pDelta = Motor.GetVelocityFromMovement(_rootMotionPositionDelta, deltaTime);
+                var forward = Motor.CharacterForward;
+
+                horizontalVelocity = Vector3.Dot(Motor.Transform.InverseTransformDirection(pDelta), forward) * forward;
+                horizontalVelocity *= Stats.AirborneHorizontalVelocityMultiplier;
+            }
+            else if (!_FullMovementControl || // If FullMovementControl is disabled in the Inspector.
                 !StateMachine.CurrentState.FullMovementControl) // Or the current state does not want it.
             {
                 // Use only the raw RootMotion.

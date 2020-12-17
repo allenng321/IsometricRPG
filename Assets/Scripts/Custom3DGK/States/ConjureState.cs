@@ -31,6 +31,7 @@ namespace Custom3DGK.States
             var pooledPrefab = conjuresAvailable[Creature.ConjureType].conjureModel;
             pooledPrefab.SetPoolParent(Creature.Planet.transform);
             var instance = pooledPrefab.Get<PooledMonoBehaviour>(transform.position, transform.rotation);
+            Creature.Airborne.CancelJump(true);
             StartCoroutine(DissipateAfterDelay(instance));
         }
         

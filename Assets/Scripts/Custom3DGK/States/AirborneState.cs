@@ -20,11 +20,17 @@ namespace Custom3DGK.States
         [SerializeField] private WallState _WallState;
         [SerializeField] private UnityEvent _PlayAudio;// See the Read Me.
 
-        public bool IsJumping { get; private set; }
+        [Range(.1f, 10)] public float gravityMultiplier = 2f;
+
+        public bool InAir { get; private set; }
+        public bool Jumping { get; set; }
+        
+        public enum JumpingCancel { Disable, Delayed, Immediate }
+        public JumpingCancel CancelJumping { get; set; }
 
         private Executor _executor;
         private InvokeId _isJumpingCoroutine;
-        private bool _isJumpInitializing = true;
+        private bool _isJumpInitializing;
         
         /************************************************************************************************************************/
 
@@ -36,6 +42,9 @@ namespace Custom3DGK.States
         private void OnEnable()
         {
             Creature.Animancer.Play(_Animations);
+            
+            // set in air true it does not even if we fell off a ledge as long as we are not on ground
+            InAir = true;
         }
 
         /************************************************************************************************************************/
@@ -54,17 +63,22 @@ namespace Custom3DGK.States
 
         /************************************************************************************************************************/
 
+        private void CheckGroundStatus()
+        {
+            if (!InAir) return;
+
+            if (Creature.IsGrounded() && Creature.VerticalSpeed <= 0 && !_isJumpInitializing)
+            {
+                InAir = false;
+            }
+        }
+
         private void Update()
         {
-            // When you jump, do not start checking if you have landed until you stop going up.
-            if (IsJumping)
-            {
-                if (Creature.IsGrounded() && Creature.VerticalSpeed <= 0 && !_isJumpInitializing)
-                {
-                    IsJumping = false;
-                }
-            }
-            else
+            // When you jump, do not start checking if you can switch to land state until you reach ground.
+            CheckGroundStatus();
+            
+            if (!InAir)
             {
                 // If we have a landing state, try to enter it.
                 if (_LandingState != null)
@@ -105,43 +119,57 @@ namespace Custom3DGK.States
 
             // We did not override CanEnterState to check if the Creature is grounded because this state is also used
             // if you walk off a ledge, so instead we check that condition here when specifically attempting to jump.
-            if (Creature.IsGrounded() || _WallState.IsWallHanging)
-            {
-                // Entering this state would have called OnEnable.
-                IsJumping = true;
-                Creature.Motor.ForceUnground();
-                _isJumpInitializing = true;
-                _PlayAudio.Invoke(); 
-                
-                if (_isJumpingCoroutine != null)
+
+            // first deny if the current is landing or conjure state
+            var cs = Creature.StateMachine.CurrentState;
+            if (cs is LandingState || cs is ConjureState) return;
+
+            // next check the conditions required to jump
+            if (!Creature.IsGrounded() && !_WallState.IsWallHanging) return;
+            
+            // Entering this state would have called OnEnable.
+            InAir = true;
+            Creature.Motor.ForceUnground();
+            _isJumpInitializing = true;
+            _PlayAudio.Invoke();
+            Jumping = true; 
+
+            /*if (_isJumpingCoroutine != null)
                 {
                     // In case we manage to jump again before existing coroutine fires
                     _executor.StopExecute(_isJumpingCoroutine);
                 }
+                
                 _isJumpingCoroutine = _executor.DelayExecute(
                     1f,
                     x =>
                     {
                         _isJumpingCoroutine = null; // So we do not cancel finished routines
                         IsJumping = false;
-                    });
-                _executor.DelayExecute(
-                    0.25f,
-                    x =>
-                    {
-                        _isJumpInitializing = false;
-                    });                
-            }
+                    });*/
+
+            _executor.DelayExecute(
+                0.25f,
+                x => { _isJumpInitializing = false; });
         }
         
-        public void CancelJump()
+        // exists in case if needed on a key press in future
+        public void CancelJump(bool conjure = false)
         {
-            IsJumping = false;
-            if (_isJumpingCoroutine != null)
+            _isJumpInitializing = false;
+            Jumping = false;
+            CancelJumping = conjure ? JumpingCancel.Immediate : JumpingCancel.Delayed;
+
+            // check ground with a delay so that player has enough time to stand on the conjure and then disable InAir 
+            _executor.DelayExecute(
+                0.05f,
+                x => { CheckGroundStatus(); });
+
+            /*if (_isJumpingCoroutine != null)
             {
                 // In case we manage to jump again before existing coroutine fires
                 _executor.StopExecute(_isJumpingCoroutine);
-            }
+            }*/
         }
 
         /************************************************************************************************************************/

@@ -34,7 +34,6 @@ namespace Custom3DGK.Creatures
         private Mouse _Mouse;
 
         private bool _jumpWasPressed = false;
-        private bool _jumpIsHeld = false;
         private bool _hangWasPressed = false;
         private bool _hangIsHeld = false;
         private bool _conjureWasPressed = false;
@@ -141,22 +140,13 @@ namespace Custom3DGK.Creatures
                 if (_Keyboard.leftArrowKey.wasPressedThisFrame) Creature.ConjureType = 3;
             }
 
-                        
+
             // JUMP NOTES: Jump gets priority for better platforming.
             // - should have option to implement double jump
             // - decided not to "charge" jumps, instead we are able to hold jump to increase air time
             if (_jumpWasPressed)
             {
-                if (!_jumpIsHeld)
-                {
-                    _jumpIsHeld = true;
-                    Creature.Airborne.TryJump();
-                }
-            }
-            else if (_jumpIsHeld)
-            {
-                _jumpIsHeld = false;
-                Creature.Airborne.CancelJump();
+                Creature.Airborne.TryJump();
             }
 
             if (_hangWasPressed)
