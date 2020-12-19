@@ -281,13 +281,20 @@ namespace Custom3DGK.Creatures
                     currentRotation = Quaternion.RotateTowards(
                         currentRotation,
                         Brain.TargetRotation,
-                        _maxDegreesDelta
-                    );
+                        _maxDegreesDelta);
             }
             else
             {
                 // Debug.Log("ROOT ROTATION");
-                currentRotation = _rootMotionRotationDelta * currentRotation;
+                // currentRotation = _rootMotionRotationDelta * currentRotation;
+                _rootMotionRotationDelta.ToAngleAxis(out var angle, out var axis);
+
+                if (Vector3.Angle(axis, Vector3.up) < 1) axis = _gravityUp;
+                else if (Vector3.Angle(axis, Vector3.down) < 1) axis = -_gravityUp;
+                else axis = Motor.Transform.InverseTransformDirection(axis);
+
+                var rot = Quaternion.AngleAxis(angle, axis);
+                currentRotation = rot * currentRotation;
             }
 
             // PLANET ALIGNMENT SECTION
