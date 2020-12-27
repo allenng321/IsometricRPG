@@ -105,7 +105,7 @@ namespace Custom3DGK.Creatures
         public float VerticalSpeed { get; set; }
         [HideInInspector] public int ConjureType { get; set; }
         public Material GroundMaterial { get; private set; }
-        public Transform ft;
+        // public Transform ft;
 
         
         /************************************************************************************************************************/
@@ -271,7 +271,7 @@ namespace Custom3DGK.Creatures
                 // 1 - Mathf.Exp(Time.deltaTime)
             // );
             _gravityUp = _Planet.GetGravityUpForPosition(Motor.Transform.position);
-            if(ft) ft.position = transform.position;
+            // if(ft) ft.position = transform.position;
         }
         
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
