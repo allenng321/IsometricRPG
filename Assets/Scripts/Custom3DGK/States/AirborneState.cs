@@ -20,7 +20,7 @@ namespace Custom3DGK.States
         [SerializeField] private WallState _WallState;
         [SerializeField] private UnityEvent _PlayAudio;// See the Read Me.
 
-        [Range(.1f, 10)] public float gravityMultiplier = 2f;
+        [Range(.1f, 10)] public float gravityMultiplier = 4f;
 
         public bool InAir { get; private set; }
         public bool Jumping { get; set; }
