@@ -1,6 +1,6 @@
 ﻿using Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem;
+///using UnityEngine.InputSystem;
 using KinematicCharacterController;
 
 public class GravityVirtualCameraController : MonoBehaviour
@@ -16,8 +16,8 @@ public class GravityVirtualCameraController : MonoBehaviour
     private float maxVAngle = 160f;
     private float minVAngle = 1f;   // Overhead top-down views
     private Planet _planet;
-    private Gamepad _gamepad;
-    private Mouse _mouse;
+   /// private Gamepad _gamepad;
+   /// private Mouse _mouse;
     private Transform _follow;
     private KinematicCharacterMotor _followMotor;
     private Transform _lookAt;
@@ -47,8 +47,8 @@ public class GravityVirtualCameraController : MonoBehaviour
         _rescaleOffsetA = (offsetMin - offsetMax) / (maxVAngle - minVAngle);
         _rescaleOffsetB = offsetMin - _rescaleOffsetA * maxVAngle;
 
-        _gamepad = Gamepad.current;
-        _mouse = Mouse.current;
+        //_gamepad = Gamepad.current;
+        //_mouse = Mouse.current;
         
         var planets = (Planet[]) FindObjectsOfType(typeof(Planet));
         foreach(Planet planet in planets)
@@ -70,19 +70,19 @@ public class GravityVirtualCameraController : MonoBehaviour
     {
         Vector2 inputValue = Vector2.zero;
 
-        if (_gamepad != null)
-        {
-            if (_gamepad.rightStick.IsActuated(0.09f))
-            {
-                inputValue.x = _gamepad.rightStick.x.ReadValue();
-                inputValue.y = _gamepad.rightStick.y.ReadValue();
-            }
-        }
-        else
-        {
-            inputValue.x = _mouse.delta.x.ReadValue();
-            inputValue.y = _mouse.delta.y.ReadValue();
-        }
+        //if (_gamepad != null)
+        //{
+        //    if (_gamepad.rightStick.IsActuated(0.09f))
+        //    {
+        //        inputValue.x = _gamepad.rightStick.x.ReadValue();
+        //        inputValue.y = _gamepad.rightStick.y.ReadValue();
+        //    }
+        //}
+        //else
+       // {
+       //     inputValue.x = _mouse.delta.x.ReadValue();
+       //     inputValue.y = _mouse.delta.y.ReadValue();
+       // }
         
         // TESTING BEGIN
         // inputValue = Vector2.down;

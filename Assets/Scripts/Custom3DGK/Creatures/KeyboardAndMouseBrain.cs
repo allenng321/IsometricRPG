@@ -5,7 +5,7 @@
 using Animancer.FSM;
 using Custom3DGK.States;
 using UnityEngine;
-using UnityEngine.InputSystem;
+///using UnityEngine.InputSystem;
 
 namespace Custom3DGK.Creatures
 {
@@ -29,9 +29,9 @@ namespace Custom3DGK.Creatures
         
         private StateMachine<CreatureState>.InputBuffer _InputBuffer;
 
-        private Gamepad _Gamepad; 
-        private Keyboard _Keyboard; 
-        private Mouse _Mouse;
+       /// private Gamepad _Gamepad; 
+       /// private Keyboard _Keyboard; 
+        /// private Mouse _Mouse;
 
         private bool _jumpWasPressed = false;
         private bool _hangWasPressed = false;
@@ -58,13 +58,13 @@ namespace Custom3DGK.Creatures
             _InputBuffer = new StateMachine<CreatureState>.InputBuffer(Creature.StateMachine);
             TargetRotation = transform.rotation;
             ForwardDirection = Vector3.zero;
-            _Gamepad = Gamepad.current;
-            _Keyboard = Keyboard.current;
-            _Mouse = Mouse.current;
-            var moveAction = new InputAction("Move");
-            moveAction.AddCompositeBinding("Axis")
-                .With("Positive", "<Keyboard>/dKey")
-                .With("Negative", "<Keyboard>/aKey");
+            //_Gamepad = Gamepad.current;
+            //_Keyboard = Keyboard.current;
+            //_Mouse = Mouse.current;
+            //var moveAction = new InputAction("Move");
+            //moveAction.AddCompositeBinding("Axis")
+                //.With("Positive", "<Keyboard>/dKey")
+                //.With("Negative", "<Keyboard>/aKey");
 
         }
 
@@ -82,19 +82,19 @@ namespace Custom3DGK.Creatures
                 // Debug.Log(_input);
 
             }
-            else if (_Gamepad != null)
-            {
-                if (_Gamepad.leftStick.IsActuated(0.2f))
-                    _input= _Gamepad.leftStick.ReadValue();
-            }
-            else
-            {
-                if (_Keyboard.aKey.isPressed) _input.x -= 1;
-                if (_Keyboard.dKey.isPressed) _input.x += 1;
-                if (_Keyboard.wKey.isPressed) _input.y += 1;
-                if (_Keyboard.sKey.isPressed) _input.y -= 1;
-                _input.Normalize();
-            }
+            //else if (_Gamepad != null)
+            //{
+            //    if (_Gamepad.leftStick.IsActuated(0.2f))
+            //        _input= _Gamepad.leftStick.ReadValue();
+            //}
+            //else
+            //{
+            //    if (_Keyboard.aKey.isPressed) _input.x -= 1;
+            //    if (_Keyboard.dKey.isPressed) _input.x += 1;
+            //    if (_Keyboard.wKey.isPressed) _input.y += 1;
+            //    if (_Keyboard.sKey.isPressed) _input.y -= 1;
+            //    _input.Normalize();
+            //}
 
             if (_input == Vector2.zero)
             {
@@ -117,28 +117,28 @@ namespace Custom3DGK.Creatures
         private void UpdateActions()
         {
             // Collect Input
-            if (_Gamepad != null)
-            {   // TODO is there a dictionary or array with entries of which was pressed this frame?
-                _jumpWasPressed = _Gamepad.buttonSouth.isPressed;
-                _hangWasPressed = _Gamepad.leftShoulder.isPressed;
-                _conjureWasPressed = _Gamepad.buttonWest.wasPressedThisFrame;
-                _attackWasPressed = _Gamepad.buttonEast.wasPressedThisFrame;
-                if (_Gamepad.dpad.up.wasPressedThisFrame) Creature.ConjureType = 0;
-                if (_Gamepad.dpad.right.wasPressedThisFrame) Creature.ConjureType = 1;
-                if (_Gamepad.dpad.down.wasPressedThisFrame) Creature.ConjureType = 2;
-                if (_Gamepad.dpad.left.wasPressedThisFrame) Creature.ConjureType = 3;
-            }
-            else
-            {
-                _jumpWasPressed = _Keyboard.spaceKey.wasPressedThisFrame;
-                _hangWasPressed = _Keyboard.leftCommandKey.wasPressedThisFrame || _Keyboard.rightCommandKey.wasPressedThisFrame;
-                _conjureWasPressed = _Mouse.leftButton.wasPressedThisFrame;
-                _attackWasPressed = _Keyboard.shiftKey.wasPressedThisFrame;
-                if (_Keyboard.upArrowKey.wasPressedThisFrame) Creature.ConjureType = 0;
-                if (_Keyboard.rightArrowKey.wasPressedThisFrame) Creature.ConjureType = 1;
-                if (_Keyboard.downArrowKey.wasPressedThisFrame) Creature.ConjureType = 2;
-                if (_Keyboard.leftArrowKey.wasPressedThisFrame) Creature.ConjureType = 3;
-            }
+            //if (_Gamepad != null)
+            //{   // TODO is there a dictionary or array with entries of which was pressed this frame?
+            //    _jumpWasPressed = _Gamepad.buttonSouth.isPressed;
+            //    _hangWasPressed = _Gamepad.leftShoulder.isPressed;
+            //    _conjureWasPressed = _Gamepad.buttonWest.wasPressedThisFrame;
+            //    _attackWasPressed = _Gamepad.buttonEast.wasPressedThisFrame;
+            //    if (_Gamepad.dpad.up.wasPressedThisFrame) Creature.ConjureType = 0;
+            //    if (_Gamepad.dpad.right.wasPressedThisFrame) Creature.ConjureType = 1;
+            //    if (_Gamepad.dpad.down.wasPressedThisFrame) Creature.ConjureType = 2;
+            //    if (_Gamepad.dpad.left.wasPressedThisFrame) Creature.ConjureType = 3;
+            //}
+            //else
+            //{
+            //    _jumpWasPressed = _Keyboard.spaceKey.wasPressedThisFrame;
+            //    _hangWasPressed = _Keyboard.leftCommandKey.wasPressedThisFrame || _Keyboard.rightCommandKey.wasPressedThisFrame;
+            //    _conjureWasPressed = _Mouse.leftButton.wasPressedThisFrame;
+            //    _attackWasPressed = _Keyboard.shiftKey.wasPressedThisFrame;
+            //    if (_Keyboard.upArrowKey.wasPressedThisFrame) Creature.ConjureType = 0;
+            //    if (_Keyboard.rightArrowKey.wasPressedThisFrame) Creature.ConjureType = 1;
+            //    if (_Keyboard.downArrowKey.wasPressedThisFrame) Creature.ConjureType = 2;
+            //    if (_Keyboard.leftArrowKey.wasPressedThisFrame) Creature.ConjureType = 3;
+            //}
 
 
             // JUMP NOTES: Jump gets priority for better platforming.
