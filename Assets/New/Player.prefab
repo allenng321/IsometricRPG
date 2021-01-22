@@ -39,10 +39,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8301641411215789151}
-  - component: {fileID: 5258401975259029400}
   - component: {fileID: 8282720092781222242}
   - component: {fileID: 3920489431411317173}
-  - component: {fileID: 8709504751086141141}
+  - component: {fileID: 8473004527209860380}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -68,22 +67,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &5258401975259029400
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8301641411216216127}
-  serializedVersion: 2
-  m_Mass: 0.8
-  m_Drag: 0.2
-  m_AngularDrag: 0.2
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!136 &8282720092781222242
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -110,20 +93,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cec23fef59ec832478f40f58c6d9ef31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8709504751086141141
-MonoBehaviour:
+  speed: 1
+  cam: {fileID: 0}
+  rotationAcc: 2
+--- !u!54 &8473004527209860380
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8301641411216216127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d41c094a9e254447b55abe59fe0fad8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 5258401975259029400}
-  G: 0
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 2
+  m_AngularDrag: 0
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &8301641411216219673
 GameObject:
   m_ObjectHideFlags: 0
