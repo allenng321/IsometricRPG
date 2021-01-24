@@ -4,18 +4,25 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    /* TODO
-     *  3. Walk on planets
-     */
     Rigidbody rb;
-    [SerializeField]float speed = 1f;
+    [SerializeField]float speed = 1000f;
+    [SerializeField]float jumpPower = 5f;
     Vector3 target;
     [SerializeField]GameObject cam;
-    [SerializeField] float rotationAcc = 1f;
+    [SerializeField] float rotationAcc = 5f;
+
+    GameObject raycaster;
+    [SerializeField]float rayDistance = 0.05f;
+
+    void Debugging()
+    {
+        Debug.DrawRay(raycaster.transform.position, -transform.up * rayDistance);
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        raycaster = transform.GetChild(0).gameObject;
     }
     private void Update()
     {
@@ -27,14 +34,52 @@ public class PlayerMovement : MonoBehaviour
         Quaternion deltaRotation = Quaternion.Euler(eulerAngleVelocity * Time.deltaTime * rotationAcc);
         rb.MoveRotation(rb.rotation * deltaRotation);
 
+        Debug.Log(Grounded());
+
+        Debugging(); /// always in the end!
     }
     private void FixedUpdate()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        if (Input.GetAxisRaw("Horizontal") > 0)
+        {
+            rb.AddForce(transform.right * speed * Time.deltaTime);
+        }
+        else if (Input.GetAxisRaw("Horizontal") < 0)
+        {
+            rb.AddForce(-transform.right * speed * Time.deltaTime);
+        }
 
-        rb.velocity += transform.right * horizontal * speed;
-        rb.velocity += transform.forward * vertical * speed;
+        if (Input.GetAxisRaw("Vertical") > 0)
+        {
+            rb.AddForce(transform.forward * speed * Time.deltaTime);
+        }
+        else if (Input.GetAxisRaw("Horizontal") < 0)
+        {
+            rb.AddForce(-transform.forward * speed * Time.deltaTime);
+        }
+        if(Input.GetAxisRaw("Jump") > 0)
+        {
+            Jump();
+        }
 
+    }
+    void Jump()
+    {
+        if(Grounded())
+        rb.AddForce(transform.up * jumpPower, ForceMode.Impulse);
+    }
+    bool Grounded()
+    {
+        
+        RaycastHit hit;
+        bool hitt = Physics.Raycast(raycaster.transform.position, -transform.up, out hit, rayDistance);
+        if (hitt)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
